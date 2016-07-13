@@ -109,7 +109,6 @@ void TcpClient::slotConnected()
 
     int length=0;
     QJsonObject msg_json;
-//    QString msg=userName+tr(":Enter Chat Room");
     msg_json.insert("usrname",userName);
     QJsonDocument msg_doc(msg_json);
     QString msg(msg_doc.toJson(QJsonDocument::Compact));
@@ -129,13 +128,10 @@ void TcpClient::slotSend()
     }
 
     QJsonObject msg_json;
-//    QString msg=userName+tr(":Enter Chat Room");
     msg_json.insert("usrname",userName);
     msg_json.insert("msg",sendLineEdit->text());
     QJsonDocument msg_doc(msg_json);
     QString msg(msg_doc.toJson(QJsonDocument::Compact));
-//    QString msg=userName+":"+sendLineEdit->text();
-//    QString msg =" {\"+aa\":[\"sdddssd\"],\"bb\":[\"892394829342394792399\",\"23894723984729374932874\"],\"cc\":[\"11111111111111\"]}";
 
     tcpSocket->write(msg.toLatin1(),msg.length());
     sendLineEdit->clear();
