@@ -2,8 +2,9 @@
 #include <QMessageBox>
 #include <QHostInfo>
 #include <QJsonObject>
-#include<QJsonDocument>
-
+#include <QJsonDocument>
+#include <QFileDialog>
+#include <QFile>
 
 TcpClient::TcpClient(QWidget *parent,Qt::WindowFlags f)
     : QDialog(parent,f)
@@ -22,13 +23,19 @@ TcpClient::TcpClient(QWidget *parent,Qt::WindowFlags f)
     serverIPLineEdit = new QLineEdit;
 
     portLabel = new QLabel(tr("port"));
+    fileName_Lab = new QLabel(tr("file name"));
     portLineEdit = new QLineEdit;
 
     enterBtn= new QPushButton(tr("connect"));
+    testBtn= new QPushButton(tr("open"));
+    sendFile = new QPushButton(tr("sendFile"));
+
 
     mainLayout = new QGridLayout(this);
     mainLayout->addWidget(contentListWidget,0,0);
+    mainLayout->addWidget(fileName_Lab,0,1);
     mainLayout->addWidget(sendLineEdit,1,0);
+    mainLayout->addWidget(sendFile,1,1);
     mainLayout->addWidget(sendBtn,2,0);
     mainLayout->addWidget(userNameLabel,3,0);
     mainLayout->addWidget(userNameLineEdit,3,1);
@@ -37,6 +44,7 @@ TcpClient::TcpClient(QWidget *parent,Qt::WindowFlags f)
     mainLayout->addWidget(portLabel,5,0);
     mainLayout->addWidget(portLineEdit,5,1);
     mainLayout->addWidget(enterBtn,6,0);
+    mainLayout->addWidget(testBtn,6,1);
 
     status = false;
 
@@ -49,6 +57,8 @@ TcpClient::TcpClient(QWidget *parent,Qt::WindowFlags f)
 
     connect(enterBtn,SIGNAL(clicked()),this,SLOT(slotEnter()));
     connect(sendBtn,SIGNAL(clicked()),this,SLOT(slotSend()));
+    connect(testBtn,SIGNAL(clicked()),this,SLOT(slotOpen()));
+    connect(sendFile,SIGNAL(clicked()),this,SLOT(sendFile_start()));
 
     sendBtn->setEnabled(false);
 }
@@ -155,4 +165,17 @@ void TcpClient::dataReceived()
         QString msg=datagram.data();
         contentListWidget->addItem(msg.left(datagram.size()));
     }
+}
+
+void TcpClient::slotOpen(){
+    QString fileName_temp = QFileDialog::getOpenFileName(
+                this,
+                "open file dialog Choose a file",
+                "/home",
+                "Images (*.*)" );
+    fileName_Lab->setText(fileName_temp);
+}
+
+void TcpClient::sendFile_start(){
+
 }

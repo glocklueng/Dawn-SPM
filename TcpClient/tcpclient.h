@@ -34,12 +34,18 @@ private:
     QHostAddress *serverIP;
     QString userName;
     QTcpSocket *tcpSocket;
+    QPushButton *testBtn;
+    QString fileName;
+    QLabel *fileName_Lab;
+    QPushButton *sendFile;
 public slots:
     void slotEnter();
     void slotConnected();
     void slotDisconnected();
     void dataReceived();
     void slotSend();
+    void slotOpen();
+    void sendFile_start();
 };
 
 #endif // TCPCLIENT_H
