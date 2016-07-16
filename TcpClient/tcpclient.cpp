@@ -177,11 +177,11 @@ void TcpClient::slotOpen(){
 }
 
 void TcpClient::sendFile_start(){
-    QFile sendFile = new QFile(fileName);
+    QFile *sendFile = new QFile(fileName);
     if (!sendFile->open(QFile::ReadOnly ))  //读取发送文件
     {    return;}
     QByteArray outBlock;
-    outBlock = sendFile->read(sendFile.size());
+    outBlock = sendFile->read(sendFile->size());
 
 
 //    QJsonObject msg_json;

@@ -22,6 +22,7 @@ chatServer.on('connection', function(client) {
             broadcast(JSON.stringify(send_obj),client);
         }else{
             broadcast(data,client);
+            console.log(data);
             console.log("usr: "+reciv_obj.usrname+" login");
         }
     });
