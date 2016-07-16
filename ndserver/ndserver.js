@@ -2,6 +2,7 @@ var net = require('net');
 var chatServer = net.createServer(),
     clientList = [];
 var reciv_obj ={};
+var send_obj={};
 
 chatServer.on('connection', function(client) {
     console.log("new connection from "+client.remoteAddress+":"+client.remotePort);
@@ -16,7 +17,11 @@ chatServer.on('connection', function(client) {
         if('msg' in reciv_obj){
             console.log(reciv_obj.usrname+" says: "+reciv_obj.msg);
             broadcast(reciv_obj.msg, client);
+        }else if('file' in reciv_obj){
+            send_obj.file = reciv_obj.file;
+            broadcast(JSON.stringify(send_obj),client);
         }else{
+            broadcast(data,client);
             console.log("usr: "+reciv_obj.usrname+" login");
         }
     });
