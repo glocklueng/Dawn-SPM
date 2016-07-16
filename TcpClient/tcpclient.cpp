@@ -168,12 +168,12 @@ void TcpClient::dataReceived()
 }
 
 void TcpClient::slotOpen(){
-    QString fileName_temp = QFileDialog::getOpenFileName(
+    fileName= QFileDialog::getOpenFileName(
                 this,
                 "open file dialog Choose a file",
                 "/home",
                 "Images (*.*)" );
-    fileName_Lab->setText(fileName_temp);
+    fileName_Lab->setText(fileName);
 }
 
 void TcpClient::sendFile_start(){
