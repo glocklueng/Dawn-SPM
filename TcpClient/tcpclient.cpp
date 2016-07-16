@@ -5,6 +5,7 @@
 #include <QJsonDocument>
 #include <QFileDialog>
 #include <QFile>
+#include <QTextStream>
 
 TcpClient::TcpClient(QWidget *parent,Qt::WindowFlags f)
     : QDialog(parent,f)
@@ -178,8 +179,9 @@ void TcpClient::dataReceived()
                 }
                 if(obj.contains("type"))
                 {
-                    QJsonValue type_value = obj.take("usrname");
+                    QJsonValue type_value = obj.take("type");
                     type_reciv=type_value.toString();
+                    fileName_Lab->setText(type_reciv);
                 }
                 if(obj.contains("content"))
                 {
@@ -190,15 +192,19 @@ void TcpClient::dataReceived()
         }
         if(type_reciv == "file" )
         {
-            QFile *receivedFile = new QFile("D:\new.cpp");
-            if (!receivedFile->open(QFile::WriteOnly ))  {    return;}
-            receivedFile->write(datagram_reciv);
-            datagram_reciv.resize(0);
+            fileName_Lab->setText("recive");
+            QString fileName_reciv = QFileDialog::getSaveFileName(this,tr("Save File"),QString(),tr("Files (*.txt);;C++ (*.cpp *.h)"));
+            QFile receivedFile(fileName_reciv);
+            if (!receivedFile.open(QFile::WriteOnly ))  {    return;}
+            QTextStream stream(&receivedFile);
+            stream<<datagram_reciv;
+            stream.flush();
+            receivedFile.close();
         }
 
 
-        QString msg=datagram.data();
-        contentListWidget->addItem(msg.left(datagram.size()));
+        contentListWidget->addItem(datagram_reciv);
+        datagram_reciv.resize(0);
     }
 
 }
