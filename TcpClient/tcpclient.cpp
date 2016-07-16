@@ -120,14 +120,12 @@ void TcpClient::slotConnected()
     int length=0;
     QJsonObject msg_json;
     msg_json.insert("usrname",userName);
+    msg_json.insert("type","msg");
     QJsonDocument msg_doc(msg_json);
     QString msg(msg_doc.toJson(QJsonDocument::Compact));
+    contentListWidget->addItem("sended");
 
-    if((length=tcpSocket->write(msg.toLatin1(),msg.length()))!=msg.length())
-    {
-        contentListWidget->addItem("sended");
-        return;
-    }
+    tcpSocket->write(msg.toLatin1(),msg.length());
 }
 
 void TcpClient::slotSend()
@@ -159,6 +157,8 @@ void TcpClient::dataReceived()
     while(tcpSocket->bytesAvailable()>0)
     {
         QString type_reciv;
+        QString usrname_reciv;
+        QByteArray datagram_reciv;
         QByteArray datagram;
         datagram.resize(tcpSocket->bytesAvailable());
 
@@ -174,7 +174,7 @@ void TcpClient::dataReceived()
                 if(obj.contains("usrname"))
                  {
                     QJsonValue name_value = obj.take("usrname");
-                    QString usrname_temp = name_value.toString();
+                    usrname_reciv = name_value.toString();
                 }
                 if(obj.contains("type"))
                 {
@@ -184,13 +184,16 @@ void TcpClient::dataReceived()
                 if(obj.contains("content"))
                 {
                     QJsonValue content_value = obj.take("content");
-                    QByteArray datagram_reciv = content_value.toVariant().toByteArray();
+                    datagram_reciv = content_value.toVariant().toByteArray();
                 }
             }
         }
-        if(type_reciv == "file:" )
+        if(type_reciv == "file" )
         {
-
+            QFile *receivedFile = new QFile("D:\new.cpp");
+            if (!receivedFile->open(QFile::WriteOnly ))  {    return;}
+            receivedFile->write(datagram_reciv);
+            datagram_reciv.resize(0);
         }
 
 

@@ -37,7 +37,7 @@ chatServer.on('connection', function(client) {
 function broadcast(message, client) {
     for(var i=0;i<clientList.length;i+=1) {
         if(client !== clientList[i]) {
-            clientList[i].write(message.stringify());
+            clientList[i].write(JSON.stringify(message));
         }
     }
 }
