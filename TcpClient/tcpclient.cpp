@@ -139,7 +139,8 @@ void TcpClient::slotSend()
 
     QJsonObject msg_json;
     msg_json.insert("usrname",userName);
-    msg_json.insert("msg",sendLineEdit->text());
+    msg_json.insert("type","msg");
+    msg_json.insert("content",sendLineEdit->text());
     QJsonDocument msg_doc(msg_json);
     QString msg(msg_doc.toJson(QJsonDocument::Compact));
 
@@ -157,14 +158,46 @@ void TcpClient::dataReceived()
 {
     while(tcpSocket->bytesAvailable()>0)
     {
+        QString type_reciv;
         QByteArray datagram;
         datagram.resize(tcpSocket->bytesAvailable());
 
         tcpSocket->read(datagram.data(),datagram.size());
 
+        QJsonParseError json_error;
+        QJsonDocument parse_doucment = QJsonDocument::fromJson(datagram, &json_error);
+        if(json_error.error == QJsonParseError::NoError)
+        {
+            if(parse_doucment.isObject())
+            {
+                QJsonObject obj = parse_doucment.object();
+                if(obj.contains("usrname"))
+                 {
+                    QJsonValue name_value = obj.take("usrname");
+                    QString usrname_temp = name_value.toString();
+                }
+                if(obj.contains("type"))
+                {
+                    QJsonValue type_value = obj.take("usrname");
+                    type_reciv=type_value.toString();
+                }
+                if(obj.contains("content"))
+                {
+                    QJsonValue content_value = obj.take("content");
+                    QByteArray datagram_reciv = content_value.toVariant().toByteArray();
+                }
+            }
+        }
+        if(type_reciv == "file:" )
+        {
+
+        }
+
+
         QString msg=datagram.data();
         contentListWidget->addItem(msg.left(datagram.size()));
     }
+
 }
 
 void TcpClient::slotOpen(){
@@ -184,11 +217,12 @@ void TcpClient::sendFile_start(){
     outBlock = sendFile->read(sendFile->size());
 
 
-//    QJsonObject msg_json;
-//    msg_json.insert("usrname",userName);
-//    msg_json.insert("file",outBlock);
-//    QJsonDocument msg_doc(msg_json);
-//    QString msg(msg_doc.toJson(QJsonDocument::Compact));
+    QJsonObject msg_json;
+    msg_json.insert("usrname",userName);
+    msg_json.insert("type","file");
+    msg_json.insert("content",outBlock.data());
+    QJsonDocument msg_doc(msg_json);
+    QString msg(msg_doc.toJson(QJsonDocument::Compact));
 
-    tcpSocket->write(outBlock,outBlock.size());
+    tcpSocket->write(msg.toLatin1(),msg.size());
 }

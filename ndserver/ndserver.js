@@ -2,7 +2,6 @@ var net = require('net');
 var chatServer = net.createServer(),
     clientList = [];
 var reciv_obj ={};
-var send_obj={};
 
 chatServer.on('connection', function(client) {
     console.log("new connection from "+client.remoteAddress+":"+client.remotePort);
@@ -12,18 +11,19 @@ chatServer.on('connection', function(client) {
     clientList.push(client);
 
     client.on('data', function(data) {
-         reciv_obj  = JSON.parse(data);
+         reciv_obj  =  JSON.parse(data);
         client.name = reciv_obj.usrname;
-        if('msg' in reciv_obj){
+        if(reciv_obj.type=="msg"){
+            broadcast(reciv_obj,client);
             console.log(reciv_obj.usrname+" says: "+reciv_obj.msg);
-            broadcast(reciv_obj.msg, client);
-        }else if('file' in reciv_obj){
-            send_obj.file = reciv_obj.file;
-            broadcast(JSON.stringify(send_obj),client);
+        }else if(reciv_obj.type =="file"){
+            broadcast(reciv_obj,client);
+            console.log(reciv_obj.usrname+"send a file");
+            console.log(reciv_obj);
         }else{
             broadcast(data,client);
             console.log(data);
-            console.log("usr: "+reciv_obj.usrname+" login");
+            console.log("usr: send a data"+data);
         }
     });
 
@@ -37,7 +37,7 @@ chatServer.on('connection', function(client) {
 function broadcast(message, client) {
     for(var i=0;i<clientList.length;i+=1) {
         if(client !== clientList[i]) {
-            clientList[i].write(client.name + " says :\n" + message);
+            clientList[i].write(message.stringify());
         }
     }
 }
