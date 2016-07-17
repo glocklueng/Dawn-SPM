@@ -14,6 +14,8 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        tcpclient.cpp
+        tcpclient.cpp \
+    login.cpp
 
-HEADERS  += tcpclient.h
+HEADERS  += tcpclient.h \
+    login.h

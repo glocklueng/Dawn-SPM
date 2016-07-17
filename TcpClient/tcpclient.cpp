@@ -8,12 +8,16 @@
 #include <QTextStream>
 #include <QtMultimedia/QMediaPlayer>
 #include <QUrl>
+#include <QDateTime>
 
-TcpClient::TcpClient(QWidget *parent,Qt::WindowFlags f)
+TcpClient::TcpClient(QString usrID,QString passwd,QWidget *parent,Qt::WindowFlags f)
     : QDialog(parent,f)
 {
     setWindowTitle(QString::fromLocal8Bit("黎明苑超市"));
 
+    msgBrowser = new QTextBrowser;
+    msgBrowser->setTextColor(Qt::blue);
+    msgBrowser->setCurrentFont(QFont("Times New Roman",12));
     contentListWidget = new QListWidget;
 
     sendLineEdit = new QLineEdit;
@@ -22,49 +26,42 @@ TcpClient::TcpClient(QWidget *parent,Qt::WindowFlags f)
     userNameLabel = new QLabel(tr("usrname"));
     userNameLineEdit = new QLineEdit;
 
-    serverIPLabel = new QLabel(tr("address"));
-    serverIPLineEdit = new QLineEdit;
 
-    portLabel = new QLabel(tr("port"));
+
+
     fileName_Lab = new QLabel(tr("file name"));
-    portLineEdit = new QLineEdit;
 
-    enterBtn= new QPushButton(QString::fromLocal8Bit("连接"));
-    testBtn= new QPushButton(QString::fromLocal8Bit("打开文件"));
-    sendFile = new QPushButton(QString::fromLocal8Bit("发送文件"));
+    connectBtn= new QPushButton(QString::fromLocal8Bit("连接"));
+    oepnFileBtn= new QPushButton(QString::fromLocal8Bit("打开文件"));
+    sendFileBtn = new QPushButton(QString::fromLocal8Bit("发送文件"));
 
     pushbtntest = new QPushButton(QString::fromLocal8Bit("测试"));
 
 
     mainLayout = new QGridLayout(this);
-    mainLayout->addWidget(contentListWidget,0,0);
+//    mainLayout->addWidget(contentListWidget,0,0);
+    mainLayout->addWidget(msgBrowser,0,0);
     mainLayout->addWidget(fileName_Lab,0,1);
     mainLayout->addWidget(sendLineEdit,1,0);
-    mainLayout->addWidget(sendFile,1,1);
+    mainLayout->addWidget(sendFileBtn,1,1);
     mainLayout->addWidget(sendBtn,2,0);
     mainLayout->addWidget(pushbtntest,2,1);
     mainLayout->addWidget(userNameLabel,3,0);
     mainLayout->addWidget(userNameLineEdit,3,1);
-    mainLayout->addWidget(serverIPLabel,4,0);
-    mainLayout->addWidget(serverIPLineEdit,4,1);
-    mainLayout->addWidget(portLabel,5,0);
-    mainLayout->addWidget(portLineEdit,5,1);
-    mainLayout->addWidget(enterBtn,6,0);
-    mainLayout->addWidget(testBtn,6,1);
+    mainLayout->addWidget(connectBtn,6,0);
+    mainLayout->addWidget(oepnFileBtn,6,1);
 
     status = false;
 
     port = 9999;
-    userNameLineEdit->setText("123");
-    portLineEdit->setText(QString::number(port));
-   serverIPLineEdit->setText("115.159.83.140 ");
+    userNameLineEdit->setText(usrID);
 
     serverIP =new QHostAddress();
 
-    connect(enterBtn,SIGNAL(clicked()),this,SLOT(slotEnter()));
+    connect(connectBtn,SIGNAL(clicked()),this,SLOT(slotEnter()));
     connect(sendBtn,SIGNAL(clicked()),this,SLOT(slotSend()));
-    connect(testBtn,SIGNAL(clicked()),this,SLOT(slotOpen()));
-    connect(sendFile,SIGNAL(clicked()),this,SLOT(sendFile_start()));
+    connect(oepnFileBtn,SIGNAL(clicked()),this,SLOT(slotOpen()));
+    connect(sendFileBtn,SIGNAL(clicked()),this,SLOT(sendFile_start()));
     connect(pushbtntest,SIGNAL(clicked()),this,SLOT(slotplay()));
 
     sendBtn->setEnabled(false);
@@ -79,7 +76,7 @@ void TcpClient::slotEnter()
 {
     if(!status)
     {
-        QString ip = serverIPLineEdit->text();
+        QString ip ="115.159.83.140 ";
         if(!serverIP->setAddress(ip))
         {
             QMessageBox::information(this,tr("error"),tr("server ip address error!"));
@@ -98,7 +95,7 @@ void TcpClient::slotEnter()
         connect(tcpSocket,SIGNAL(connected()),this,SLOT(slotConnected()));
         connect(tcpSocket,SIGNAL(disconnected()),this,SLOT(slotDisconnected()));
         connect(tcpSocket,SIGNAL(readyRead()),this,SLOT(dataReceived()));
-        port = (portLineEdit->text()).toInt();
+        port = 9999;
         tcpSocket->connectToHost(*serverIP,port);
         contentListWidget->addItem("Connecting to");
         contentListWidget->addItem(serverIP->toString()+":"+QString::number(port));
@@ -122,15 +119,14 @@ void TcpClient::slotEnter()
 void TcpClient::slotConnected()
 {
     sendBtn->setEnabled(true);
-    enterBtn->setText(QString::fromLocal8Bit("断开"));
+    connectBtn->setText(QString::fromLocal8Bit("断开"));
 
 
     QJsonObject msg_json;
     msg_json.insert("usrname",userName);
-    msg_json.insert("type","msg");
+    msg_json.insert("type","login");
     QJsonDocument msg_doc(msg_json);
     QString msg(msg_doc.toJson(QJsonDocument::Compact));
-    contentListWidget->addItem("sended");
 
     tcpSocket->write(msg.toLatin1(),msg.length());
 }
@@ -149,6 +145,7 @@ void TcpClient::slotSend()
     QJsonDocument msg_doc(msg_json);
     QString msg(msg_doc.toJson(QJsonDocument::Compact));
 
+    fileName_Lab->setText(msg_json.take("content").toString());
     tcpSocket->write(msg.toLatin1(),msg.length());
     sendLineEdit->clear();
 }
@@ -156,7 +153,7 @@ void TcpClient::slotSend()
 void TcpClient::slotDisconnected()
 {
     sendBtn->setEnabled(false);
-    enterBtn->setText(tr("connect"));
+    connectBtn->setText(tr("connect"));
 }
 
 void TcpClient::dataReceived()
@@ -207,6 +204,10 @@ void TcpClient::dataReceived()
             stream<<datagram_reciv;
             stream.flush();
             receivedFile.close();
+        }else if(type_reciv=="msg"){
+           QString  time = QDateTime::currentDateTimeUtc().toString();
+            msgBrowser->append("[  partner] "+ time);
+            msgBrowser->append(datagram_reciv);
         }
 
 
@@ -243,19 +244,20 @@ void TcpClient::sendFile_start(){
     tcpSocket->write(msg.toLatin1(),msg.size());
 }
 
-void TcpClient::slotplay()
-{
-    QString fileName_reciv = QFileDialog::getOpenFileName(
-                this,
-                "open file dialog Choose a file",
-                "/home",
-                "Images (*.*)" );
+//void TcpClient::slotplay()
+//{
 
-    QMediaPlayer *play = new QMediaPlayer;
-    fileName_Lab->setText(fileName_reciv);
-    play->setMedia(QUrl("http://sc.111ttt.com/up/mp3/217385/740F74F616B5F6975F3073A33E6A99CD.mp3"));
-    play->setVolume(50);
-    play->play();
+//    QString fileName_reciv = QFileDialog::getOpenFileName(
+//                this,
+//                "open file dialog Choose a file",
+//                "/home",
+//                "Images (*.*)" );
+
+//    QMediaPlayer *play = new QMediaPlayer;
+//    fileName_Lab->setText(sendLineEdit->text());
+//    play->setMedia(QUrl("http://sc.111ttt.com/up/mp3/217385/740F74F616B5F6975F3073A33E6A99CD.mp3"));
+//    play->setVolume(50);
+//    play->play();
 
 
-}
+//}

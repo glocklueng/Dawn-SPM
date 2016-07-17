@@ -1,6 +1,7 @@
 ﻿#ifndef TCPCLIENT_H
 #define TCPCLIENT_H
 
+
 #include <QDialog>
 #include <QListWidget>
 #include <QLineEdit>
@@ -9,35 +10,33 @@
 #include <QGridLayout>
 #include <QHostAddress>
 #include <QTcpSocket>
+#include <QTextBrowser>
 
 class TcpClient : public QDialog
 {
     Q_OBJECT
     
 public:
-    TcpClient(QWidget *parent = 0,Qt::WindowFlags f=0);
+    TcpClient(QString usrID,QString passwd,QWidget *parent = 0,Qt::WindowFlags f=0);
     ~TcpClient();
 private:
+    QTextBrowser *msgBrowser;
     QListWidget *contentListWidget;
     QLineEdit *sendLineEdit;
     QPushButton *sendBtn;
     QLabel *userNameLabel;
     QLineEdit *userNameLineEdit;
-    QLabel *serverIPLabel;
-    QLineEdit *serverIPLineEdit;
-    QLabel *portLabel;
-    QLineEdit *portLineEdit;
-    QPushButton *enterBtn;
+    QPushButton *connectBtn;
     QGridLayout *mainLayout;
     bool status;
     int port;
     QHostAddress *serverIP;
     QString userName;
     QTcpSocket *tcpSocket;
-    QPushButton *testBtn;
+    QPushButton *oepnFileBtn;
     QString fileName;
     QLabel *fileName_Lab;
-    QPushButton *sendFile;
+    QPushButton *sendFileBtn;
     QPushButton *pushbtntest;
 public slots:
     void slotEnter();
@@ -47,7 +46,7 @@ public slots:
     void slotSend();
     void slotOpen();
     void sendFile_start();
-    void slotplay();
+//    void slotplay();
 };
 
 #endif // TCPCLIENT_H
