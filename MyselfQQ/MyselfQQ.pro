@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         widget.cpp \
     drawer.cpp \
-    server.cpp
+    server.cpp \
+    login.cpp
 
 HEADERS  += widget.h \
     drawer.h \
-    server.h
+    server.h \
+    login.h
 
 FORMS    += widget.ui \
     server.ui

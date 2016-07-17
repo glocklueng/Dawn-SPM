@@ -21,7 +21,7 @@ class Widget : public QWidget
     Q_OBJECT
 
 public:
-    explicit Widget(QWidget *parent,QString name);
+    explicit Widget(QWidget *parent,QString name,QString usrname);
     ~Widget();
 
 private slots:
@@ -49,6 +49,8 @@ private slots:
     void on_sendBtn_clicked();
 
 private:
+    QString userName;
+    QString name_w;
     Ui::Widget *ui;
     QColor color;
     QTextBrowser *msgBrowser;
@@ -62,7 +64,6 @@ private:
     bool status;
     int port;
     QHostAddress *serverIP;
-    QString userName;
     QTcpSocket *tcpSocket;
     QPushButton *oepnFileBtn;
     QString fileName;

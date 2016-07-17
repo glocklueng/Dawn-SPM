@@ -12,10 +12,12 @@
 #include <QUrl>
 #include <QDateTime>
 
-Widget::Widget(QWidget *parent,QString name) :
+Widget::Widget(QWidget *parent,QString name,QString usrname) :
     QWidget(parent),
     ui(new Ui::Widget)
 {
+    userName = usrname;
+    name_w = name;
     ui->setupUi(this);
     setWindowTitle(QString::fromLocal8Bit("chaoshi"));
 
@@ -24,7 +26,7 @@ Widget::Widget(QWidget *parent,QString name) :
      msgBrowser->setCurrentFont(QFont("Times New Roman",12));
      contentListWidget = new QListWidget;
 
-     sendLineEdit = new QLineEdit;
+
      sendBtn = new QPushButton(QString::fromLocal8Bit("fasong"));
 
      userNameLabel = new QLabel(tr("usrname"));
@@ -33,27 +35,13 @@ Widget::Widget(QWidget *parent,QString name) :
 
 
 
-     fileName_Lab = new QLabel(tr("file name"));
+
 
      connectBtn= new QPushButton(QString::fromLocal8Bit("连接"));
      oepnFileBtn= new QPushButton(QString::fromLocal8Bit("打开文件"));
      sendFileBtn = new QPushButton(QString::fromLocal8Bit("sendfile"));
 
      pushbtntest = new QPushButton(QString::fromLocal8Bit("测试"));
-
-
-//     mainLayout = new QGridLayout(this);
-// //    mainLayout->addWidget(contentListWidget,0,0);
-//     mainLayout->addWidget(msgBrowser,0,0);
-//     mainLayout->addWidget(fileName_Lab,0,1);
-//     mainLayout->addWidget(sendLineEdit,1,0);
-//     mainLayout->addWidget(sendFileBtn,1,1);
-//     mainLayout->addWidget(sendBtn,2,0);
-//     mainLayout->addWidget(pushbtntest,2,1);
-//     mainLayout->addWidget(userNameLabel,3,0);
-//     mainLayout->addWidget(userNameLineEdit,3,1);
-//     mainLayout->addWidget(connectBtn,6,0);
-//     mainLayout->addWidget(oepnFileBtn,6,1);
 
      status = false;
 
@@ -294,12 +282,13 @@ void Widget::on_sendBtn_clicked()
     QJsonObject msg_json;
     msg_json.insert("usrname",userName);
     msg_json.insert("type","msg");
+    msg_json.insert("toname",name_w);
     msg_json.insert("content",ui->msgTxtEdit->toHtml());
     QJsonDocument msg_doc(msg_json);
     QString msg(msg_doc.toJson(QJsonDocument::Compact));
     ui->msgTxtEdit->clear();
     QString  time = QDateTime::currentDateTimeUtc().toString();
-     ui->textBrowser->append("[  partner] "+ time);
+     ui->textBrowser->append("["+userName+"] "+ time);
      ui->textBrowser->append(msg_json.take("content").toString());
 
     tcpSocket->write(msg.toLatin1(),msg.length());
