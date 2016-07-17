@@ -212,12 +212,12 @@ void Widget::dataReceived()
             receivedFile.close();
         }else if(type_reciv=="msg"){
            QString  time = QDateTime::currentDateTimeUtc().toString();
-            msgBrowser->append("[  partner] "+ time);
-            msgBrowser->append(datagram_reciv);
+
+            ui->textBrowser->append("[  partner] "+ time);
+            ui->textBrowser->append(datagram_reciv);
         }
 
 
-        contentListWidget->addItem(datagram_reciv);
         datagram_reciv.resize(0);
     }
 
@@ -304,6 +304,9 @@ void Widget::on_sendBtn_clicked()
     QJsonDocument msg_doc(msg_json);
     QString msg(msg_doc.toJson(QJsonDocument::Compact));
     ui->msgTxtEdit->clear();
+    QString  time = QDateTime::currentDateTimeUtc().toString();
+     ui->textBrowser->append("[  partner] "+ time);
+     ui->textBrowser->append(msg_json.take("content").toString());
 
     tcpSocket->write(msg.toLatin1(),msg.length());
 }
