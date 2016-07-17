@@ -6,7 +6,8 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QTextStream>
-#include <QMediaPlayer>
+#include <QtMultimedia/QMediaPlayer>
+#include <QUrl>
 
 TcpClient::TcpClient(QWidget *parent,Qt::WindowFlags f)
     : QDialog(parent,f)
@@ -64,7 +65,7 @@ TcpClient::TcpClient(QWidget *parent,Qt::WindowFlags f)
     connect(sendBtn,SIGNAL(clicked()),this,SLOT(slotSend()));
     connect(testBtn,SIGNAL(clicked()),this,SLOT(slotOpen()));
     connect(sendFile,SIGNAL(clicked()),this,SLOT(sendFile_start()));
-    connect(sendBtn,SIGNAL(clicked()),this,SLOT(slotplay()));
+    connect(pushbtntest,SIGNAL(clicked()),this,SLOT(slotplay()));
 
     sendBtn->setEnabled(false);
 }
@@ -198,7 +199,8 @@ void TcpClient::dataReceived()
         if(type_reciv == "file" )
         {
             fileName_Lab->setText("recive");
-            QString fileName_reciv = QFileDialog::getSaveFileName(this,tr("Save File"),QString(),tr("Files (*.txt);;C++ (*.cpp *.h)"));
+//            QString fileName_reciv = QFileDialog::getSaveFileName(this,tr("Save File"),QString(),tr("Files (*.txt);;C++ (*.cpp *.h)"));
+            QString fileName_reciv = QFileDialog::getSaveFileName(this,tr("Save File"),QString(),tr("Files *.*"));
             QFile receivedFile(fileName_reciv);
             if (!receivedFile.open(QFile::WriteOnly ))  {    return;}
             QTextStream stream(&receivedFile);
@@ -243,8 +245,17 @@ void TcpClient::sendFile_start(){
 
 void TcpClient::slotplay()
 {
+    QString fileName_reciv = QFileDialog::getOpenFileName(
+                this,
+                "open file dialog Choose a file",
+                "/home",
+                "Images (*.*)" );
+
     QMediaPlayer *play = new QMediaPlayer;
-    play->setMedia(QUrl::fromLocalFile("D:\Music\Glenn Gould - Prelude & Fugue No. 24 in B minor, BWV 869 Prelude - Instrumental.flac"));
+    fileName_Lab->setText(fileName_reciv);
+    play->setMedia(QUrl("http://sc.111ttt.com/up/mp3/217385/740F74F616B5F6975F3073A33E6A99CD.mp3"));
     play->setVolume(50);
     play->play();
+
+
 }
