@@ -14,7 +14,7 @@ chatServer.on('connection', function(client) {
          reciv_obj  =  JSON.parse(data);
         client.name = reciv_obj.usrname;
         if(reciv_obj.type=="msg"){
-            broadcast(reciv_obj,client,reciv_obj.toname);
+            broadcast(reciv_obj,client);
             console.log(reciv_obj.usrname+" says: "+reciv_obj.content);
             console.log(reciv_obj.toname)
         }else if(reciv_obj.type =="file"){
@@ -35,14 +35,10 @@ chatServer.on('connection', function(client) {
         console.log(e);
     });
 });
-function broadcast(message, client, toname) {
+function broadcast(message, client) {
     for(var i=0;i<clientList.length;i+=1) {
         if(client !== clientList[i]) {
-            if (client.name == toname) {
-                clientList[i].write(JSON.stringify(message));
-            }else if(toname==all){
-                clientList[i].write(JSON.stringify(message));
-            }
+            clientList[i].write(JSON.stringify(message));
         }
     }
 }

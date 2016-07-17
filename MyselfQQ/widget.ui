@@ -347,57 +347,29 @@ p, li { white-space: pre-wrap; }
     <string>PushButton</string>
    </property>
   </widget>
-  <widget class="QLabel" name="toname_Lab">
+  <widget class="QTableWidget" name="usrTblWidget">
    <property name="geometry">
     <rect>
-     <x>480</x>
-     <y>90</y>
-     <width>181</width>
-     <height>16</height>
+     <x>460</x>
+     <y>0</y>
+     <width>221</width>
+     <height>281</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Frined:</string>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::SingleSelection</enum>
    </property>
-  </widget>
-  <widget class="QLabel" name="from_Lab">
-   <property name="geometry">
-    <rect>
-     <x>480</x>
-     <y>200</y>
-     <width>151</width>
-     <height>16</height>
-    </rect>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
    </property>
-   <property name="text">
-    <string>Me:</string>
+   <property name="showGrid">
+    <bool>false</bool>
    </property>
-  </widget>
-  <widget class="QLabel" name="ipto">
-   <property name="geometry">
-    <rect>
-     <x>480</x>
-     <y>130</y>
-     <width>161</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>IPaddress:</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>480</x>
-     <y>230</y>
-     <width>171</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>IPaddress:</string>
-   </property>
+   <column>
+    <property name="text">
+     <string>在线用户</string>
+    </property>
+   </column>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

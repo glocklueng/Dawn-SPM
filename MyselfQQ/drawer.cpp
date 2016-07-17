@@ -18,7 +18,7 @@ Drawer::Drawer(QString usrname,QString pswd,QWidget *parent,Qt::WindowFlags f)
      connect(toolBtn1,SIGNAL(clicked()),this,SLOT(showChatWidget1()));
 
      toolBtn2=new QToolButton;
-     toolBtn2->setText(tr("长歌"));
+     toolBtn2->setText(tr("dsa"));
      toolBtn2->setIcon(QPixmap(":/images/cg.png"));
      toolBtn2->setIconSize(QPixmap(":/images/mimi.png").size());
      toolBtn2->setAutoRaise(true);
@@ -51,7 +51,7 @@ Drawer::Drawer(QString usrname,QString pswd,QWidget *parent,Qt::WindowFlags f)
      layout->addWidget(toolBtn3);
      layout->addWidget(toolBtn4);
      layout->addStretch();
-     this->addItem((QWidget*)groupBox,tr("group partner"));
+     this->addItem((QWidget*)groupBox,tr(""));
 
 
 }
@@ -75,7 +75,8 @@ void Drawer::showChatWidget3()
     chatWidget3->setWindowTitle(toolBtn3->text());
     chatWidget3->setWindowIcon(toolBtn3->icon());
     chatWidget3->show();
-}void Drawer::showChatWidget4()
+}
+void Drawer::showChatWidget4()
 {
     chatWidget4=new Widget(0,toolBtn4->text(),usrname_d);
     chatWidget4->setWindowTitle(toolBtn4->text());

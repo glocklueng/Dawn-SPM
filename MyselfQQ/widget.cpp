@@ -218,7 +218,6 @@ void Widget::slotOpen(){
                 "open file dialog Choose a file",
                 "/home",
                 "Images (*.*)" );
-    fileName_Lab->setText(fileName);
 }
 
 void Widget::sendFile_start(){
@@ -292,4 +291,29 @@ void Widget::on_sendBtn_clicked()
      ui->textBrowser->append(msg_json.take("content").toString());
 
     tcpSocket->write(msg.toLatin1(),msg.length());
+}
+
+void Widget::on_sendBtn_2_clicked()
+{
+    fileName= QFileDialog::getOpenFileName(
+                this,
+                "open file dialog Choose a file",
+                "/home",
+                "Images (*.*)" );
+}
+
+void Widget::on_usrTblWidget_clicked(const QModelIndex &index)
+{
+
+}
+
+void Widget::on_clearBtn_clicked()
+{
+    ui->textBrowser->clear();
+
+}
+
+void Widget::on_usrTblWidget_doubleClicked(const QModelIndex &index)
+{
+
 }
