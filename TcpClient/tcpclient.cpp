@@ -1,4 +1,4 @@
-#include "tcpclient.h"
+﻿#include "tcpclient.h"
 #include <QMessageBox>
 #include <QHostInfo>
 #include <QJsonObject>
@@ -6,16 +6,17 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QTextStream>
+#include <QMediaPlayer>
 
 TcpClient::TcpClient(QWidget *parent,Qt::WindowFlags f)
     : QDialog(parent,f)
 {
-    setWindowTitle(tr("TCP Client"));
+    setWindowTitle(QString::fromLocal8Bit("黎明苑超市"));
 
     contentListWidget = new QListWidget;
 
     sendLineEdit = new QLineEdit;
-    sendBtn = new QPushButton(tr("send"));
+    sendBtn = new QPushButton(QString::fromLocal8Bit("发送"));
 
     userNameLabel = new QLabel(tr("usrname"));
     userNameLineEdit = new QLineEdit;
@@ -27,9 +28,11 @@ TcpClient::TcpClient(QWidget *parent,Qt::WindowFlags f)
     fileName_Lab = new QLabel(tr("file name"));
     portLineEdit = new QLineEdit;
 
-    enterBtn= new QPushButton(tr("connect"));
-    testBtn= new QPushButton(tr("open"));
-    sendFile = new QPushButton(tr("sendFile"));
+    enterBtn= new QPushButton(QString::fromLocal8Bit("连接"));
+    testBtn= new QPushButton(QString::fromLocal8Bit("打开文件"));
+    sendFile = new QPushButton(QString::fromLocal8Bit("发送文件"));
+
+    pushbtntest = new QPushButton(QString::fromLocal8Bit("测试"));
 
 
     mainLayout = new QGridLayout(this);
@@ -38,6 +41,7 @@ TcpClient::TcpClient(QWidget *parent,Qt::WindowFlags f)
     mainLayout->addWidget(sendLineEdit,1,0);
     mainLayout->addWidget(sendFile,1,1);
     mainLayout->addWidget(sendBtn,2,0);
+    mainLayout->addWidget(pushbtntest,2,1);
     mainLayout->addWidget(userNameLabel,3,0);
     mainLayout->addWidget(userNameLineEdit,3,1);
     mainLayout->addWidget(serverIPLabel,4,0);
@@ -60,6 +64,7 @@ TcpClient::TcpClient(QWidget *parent,Qt::WindowFlags f)
     connect(sendBtn,SIGNAL(clicked()),this,SLOT(slotSend()));
     connect(testBtn,SIGNAL(clicked()),this,SLOT(slotOpen()));
     connect(sendFile,SIGNAL(clicked()),this,SLOT(sendFile_start()));
+    connect(sendBtn,SIGNAL(clicked()),this,SLOT(slotplay()));
 
     sendBtn->setEnabled(false);
 }
@@ -116,9 +121,9 @@ void TcpClient::slotEnter()
 void TcpClient::slotConnected()
 {
     sendBtn->setEnabled(true);
-    enterBtn->setText(tr("Leave"));
+    enterBtn->setText(QString::fromLocal8Bit("断开"));
 
-    int length=0;
+
     QJsonObject msg_json;
     msg_json.insert("usrname",userName);
     msg_json.insert("type","msg");
@@ -234,4 +239,12 @@ void TcpClient::sendFile_start(){
     QString msg(msg_doc.toJson(QJsonDocument::Compact));
 
     tcpSocket->write(msg.toLatin1(),msg.size());
+}
+
+void TcpClient::slotplay()
+{
+    QMediaPlayer *play = new QMediaPlayer;
+    play->setMedia(QUrl::fromLocalFile("D:\Music\Glenn Gould - Prelude & Fugue No. 24 in B minor, BWV 869 Prelude - Instrumental.flac"));
+    play->setVolume(50);
+    play->play();
 }

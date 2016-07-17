@@ -1,4 +1,4 @@
-#ifndef TCPCLIENT_H
+﻿#ifndef TCPCLIENT_H
 #define TCPCLIENT_H
 
 #include <QDialog>
@@ -38,6 +38,7 @@ private:
     QString fileName;
     QLabel *fileName_Lab;
     QPushButton *sendFile;
+    QPushButton *pushbtntest;
 public slots:
     void slotEnter();
     void slotConnected();
@@ -46,6 +47,7 @@ public slots:
     void slotSend();
     void slotOpen();
     void sendFile_start();
+    void slotplay();
 };
 
 #endif // TCPCLIENT_H
