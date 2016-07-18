@@ -253,50 +253,7 @@ void Widget::sendFile_start(){
     tcpSocket->write(msg.toLatin1(),msg.size());
 }
 
-void Widget::on_pushButton_clicked()
-{
 
-    if(!status)
-    {
-        QString ip ="115.159.83.140 ";
-        if(!serverIP->setAddress(ip))
-        {
-            QMessageBox::information(this,tr("error"),tr("server ip address error!"));
-            return;
-        }
-
-        if(userNameLineEdit->text()=="")
-        {
-            QMessageBox::information(this,tr("error"),tr("User name error!"));
-            return;
-        }
-
-        userName=userNameLineEdit->text();
-
-        tcpSocket = new QTcpSocket(this);
-        connect(tcpSocket,SIGNAL(connected()),this,SLOT(slotConnected()));
-        connect(tcpSocket,SIGNAL(disconnected()),this,SLOT(slotDisconnected()));
-        connect(tcpSocket,SIGNAL(readyRead()),this,SLOT(dataReceived()));
-        port = 9999;
-        tcpSocket->connectToHost(*serverIP,port);
-        contentListWidget->addItem("Connecting to");
-        contentListWidget->addItem(serverIP->toString()+":"+QString::number(port));
-        status=true;
-    }
-    else
-    {
-        int length=0;
-        QString msg=userName+tr(":Leave Room");
-
-        if((length=tcpSocket->write(msg.toLatin1(),msg.length()))!=msg. length())
-        {
-            return;
-        }
-
-        tcpSocket->disconnectFromHost();
-        status=false;
-    }
-}
 
 void Widget::on_sendBtn_clicked()
 {
@@ -338,4 +295,50 @@ void Widget::on_clearBtn_clicked()
 void Widget::on_usrTblWidget_doubleClicked(const QModelIndex &index)
 {
 
+}
+
+void Widget::on_connect_clicked()
+{
+
+
+    if(!status)
+    {
+        QString ip ="115.159.83.140 ";
+        if(!serverIP->setAddress(ip))
+        {
+            QMessageBox::information(this,tr("error"),tr("server ip address error!"));
+            return;
+        }
+
+        if(userNameLineEdit->text()=="")
+        {
+            QMessageBox::information(this,tr("error"),tr("User name error!"));
+            return;
+        }
+
+        userName=userNameLineEdit->text();
+
+        tcpSocket = new QTcpSocket(this);
+        connect(tcpSocket,SIGNAL(connected()),this,SLOT(slotConnected()));
+        connect(tcpSocket,SIGNAL(disconnected()),this,SLOT(slotDisconnected()));
+        connect(tcpSocket,SIGNAL(readyRead()),this,SLOT(dataReceived()));
+        port = 9999;
+        tcpSocket->connectToHost(*serverIP,port);
+        contentListWidget->addItem("Connecting to");
+        contentListWidget->addItem(serverIP->toString()+":"+QString::number(port));
+        status=true;
+    }
+    else
+    {
+        int length=0;
+        QString msg=userName+tr(":Leave Room");
+
+        if((length=tcpSocket->write(msg.toLatin1(),msg.length()))!=msg. length())
+        {
+            return;
+        }
+
+        tcpSocket->disconnectFromHost();
+        status=false;
+    }
 }

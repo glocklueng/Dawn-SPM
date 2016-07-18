@@ -44,7 +44,6 @@ private slots:
     void slotOpen();
     void sendFile_start();
 
-    void on_pushButton_clicked();
 
     void on_sendBtn_clicked();
 
@@ -55,6 +54,8 @@ private slots:
     void on_clearBtn_clicked();
 
     void on_usrTblWidget_doubleClicked(const QModelIndex &index);
+
+    void on_connect_clicked();
 
 private:
     QString userName;
