@@ -154,6 +154,7 @@ void Widget::dataReceived()
 {
     while(tcpSocket->bytesAvailable()>0)
     {
+        QString msg_string_reciv;
         QJsonObject  obj;
         QString type_reciv;
         QString usrname_reciv;
@@ -183,8 +184,15 @@ void Widget::dataReceived()
                 }
                 if(obj.contains("content"))
                 {
-                    QJsonValue content_value = obj.take("content");
-                    datagram_reciv = content_value.toVariant().toByteArray();
+                    if(type_reciv=="file")
+                    {
+                        QJsonValue content_value = obj.take("content");
+                                               datagram_reciv = content_value.toVariant().toByteArray();
+                    }else if(type_reciv=="msg")
+                    {
+                        QJsonValue content_value = obj.take("content");
+                        msg_string_reciv = content_value.toString();
+                    }
                 }
             }
         }
@@ -203,11 +211,10 @@ void Widget::dataReceived()
            QString  time = QDateTime::currentDateTimeUtc().toString();
 
             ui->textBrowser->append("[  partner] "+ time);
-            ui->textBrowser->append(obj.take("content").toString());
+            ui->textBrowser->append(msg_string_reciv);
         }
 
 
-        datagram_reciv.resize(0);
     }
 
 }
