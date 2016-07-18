@@ -36,7 +36,6 @@ private slots:
     void on_underlineBtn_clicked(bool checked);
 
     void on_colorBtn_clicked();
-    void slotEnter();
     void slotConnected();
     void slotDisconnected();
     void dataReceived();
