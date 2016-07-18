@@ -50,10 +50,10 @@ Widget::Widget(QWidget *parent,QString name,QString usrname) :
 
      serverIP =new QHostAddress();
 
-     connect(connectBtn,SIGNAL(clicked()),this,SLOT(slotEnter()));
-     connect(sendBtn,SIGNAL(clicked()),this,SLOT(slotSend()));
-     connect(oepnFileBtn,SIGNAL(clicked()),this,SLOT(slotOpen()));
-     connect(sendFileBtn,SIGNAL(clicked()),this,SLOT(sendFile_start()));
+//     connect(connectBtn,SIGNAL(clicked()),this,SLOT(slotEnter()));
+//     connect(sendBtn,SIGNAL(clicked()),this,SLOT(slotSend()));
+//     connect(oepnFileBtn,SIGNAL(clicked()),this,SLOT(slotOpen()));
+//     connect(sendFileBtn,SIGNAL(clicked()),this,SLOT(sendFile_start()));
 
      sendBtn->setEnabled(false);
 }
@@ -154,6 +154,7 @@ void Widget::dataReceived()
 {
     while(tcpSocket->bytesAvailable()>0)
     {
+        QJsonObject  obj;
         QString type_reciv;
         QString usrname_reciv;
         QByteArray datagram_reciv;
@@ -168,7 +169,7 @@ void Widget::dataReceived()
         {
             if(parse_doucment.isObject())
             {
-                QJsonObject obj = parse_doucment.object();
+                obj = parse_doucment.object();
                 if(obj.contains("usrname"))
                  {
                     QJsonValue name_value = obj.take("usrname");
@@ -189,7 +190,7 @@ void Widget::dataReceived()
         }
         if(type_reciv == "file" )
         {
-            fileName_Lab->setText("recive");
+//            fileName_Lab->setText("recive");
 //            QString fileName_reciv = QFileDialog::getSaveFileName(this,tr("Save File"),QString(),tr("Files (*.txt);;C++ (*.cpp *.h)"));
             QString fileName_reciv = QFileDialog::getSaveFileName(this,tr("Save File"),QString(),tr("Files *.*"));
             QFile receivedFile(fileName_reciv);
@@ -198,16 +199,15 @@ void Widget::dataReceived()
             stream<<datagram_reciv;
             stream.flush();
             receivedFile.close();
-            datagram_reciv.resize(0);
         }else if(type_reciv=="msg"){
            QString  time = QDateTime::currentDateTimeUtc().toString();
 
             ui->textBrowser->append("[  partner] "+ time);
-            ui->textBrowser->append(datagram_reciv);
+            ui->textBrowser->append(obj.take("content").toString());
         }
 
 
-
+        datagram_reciv.resize(0);
     }
 
 }
@@ -250,6 +250,14 @@ void Widget::on_pushButton_clicked()
             return;
         }
 
+        if(userNameLineEdit->text()=="")
+        {
+            QMessageBox::information(this,tr("error"),tr("User name error!"));
+            return;
+        }
+
+        userName=userNameLineEdit->text();
+
         tcpSocket = new QTcpSocket(this);
         connect(tcpSocket,SIGNAL(connected()),this,SLOT(slotConnected()));
         connect(tcpSocket,SIGNAL(disconnected()),this,SLOT(slotDisconnected()));
@@ -262,14 +270,13 @@ void Widget::on_pushButton_clicked()
     }
     else
     {
-        QJsonObject msg_json;
-        msg_json.insert("usrname",userName);
-        msg_json.insert("type","msg");
-        msg_json.insert("content","Leave");
-        QJsonDocument msg_doc(msg_json);
-        QString msg(msg_doc.toJson(QJsonDocument::Compact));
+        int length=0;
+        QString msg=userName+tr(":Leave Room");
 
-        tcpSocket->write(msg.toLatin1(),msg.length());
+        if((length=tcpSocket->write(msg.toLatin1(),msg.length()))!=msg. length())
+        {
+            return;
+        }
 
         tcpSocket->disconnectFromHost();
         status=false;
