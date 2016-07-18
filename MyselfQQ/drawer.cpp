@@ -1,11 +1,13 @@
 #include "drawer.h"
 #include<QGroupBox>
 #include<QVBoxLayout>
+#include <QDebug>
 
 Drawer::Drawer(QString usrname,QString pswd,QWidget *parent,Qt::WindowFlags f)
     :QToolBox(parent,f)
 {
     usrname_d = usrname;
+    qDebug()<<usrname_d;
      setWindowTitle(tr("MyselfQQ 2016"));
      setWindowIcon(QPixmap(":/images/qq.png"));
 

@@ -316,7 +316,7 @@ void Widget::on_connect_clicked()
             return;
         }
 
-        userName=userNameLineEdit->text();
+
 
         tcpSocket = new QTcpSocket(this);
         connect(tcpSocket,SIGNAL(connected()),this,SLOT(slotConnected()));
