@@ -1,4 +1,4 @@
-#include "widget.h"
+﻿#include "widget.h"
 #include "ui_widget.h"
 #include<QColorDialog>
 #include <QMessageBox>
@@ -11,6 +11,7 @@
 #include <QtMultimedia/QMediaPlayer>
 #include <QUrl>
 #include <QDateTime>
+#include <QDebug>
 
 Widget::Widget(QWidget *parent,QString name,QString usrname) :
     QWidget(parent),
@@ -152,6 +153,7 @@ void Widget::slotDisconnected()
 
 void Widget::dataReceived()
 {
+    qDebug()<<"data";
     while(tcpSocket->bytesAvailable()>0)
     {
         QString msg_string_reciv;
@@ -163,33 +165,36 @@ void Widget::dataReceived()
         datagram.resize(tcpSocket->bytesAvailable());
 
         tcpSocket->read(datagram.data(),datagram.size());
-
+        qDebug()<<datagram.data();
         QJsonParseError json_error;
         QJsonDocument parse_doucment = QJsonDocument::fromJson(datagram, &json_error);
         if(json_error.error == QJsonParseError::NoError)
         {
+            qDebug()<<"json in";
             if(parse_doucment.isObject())
             {
+                qDebug()<<"is object";
                 obj = parse_doucment.object();
                 if(obj.contains("usrname"))
                  {
+                    qDebug()<<"has usrname";
                     QJsonValue name_value = obj.take("usrname");
                     usrname_reciv = name_value.toString();
                 }
                 if(obj.contains("type"))
-                {
+                { qDebug()<<"has type";
                     QJsonValue type_value = obj.take("type");
                     type_reciv=type_value.toString();
-                    fileName_Lab->setText(type_reciv);
                 }
                 if(obj.contains("content"))
                 {
+                    qDebug()<<"has content";
                     if(type_reciv=="file")
                     {
                         QJsonValue content_value = obj.take("content");
                                                datagram_reciv = content_value.toVariant().toByteArray();
                     }else if(type_reciv=="msg")
-                    {
+                    {   qDebug()<<"is a msg";
                         QJsonValue content_value = obj.take("content");
                         msg_string_reciv = content_value.toString();
                     }
@@ -208,10 +213,13 @@ void Widget::dataReceived()
             stream.flush();
             receivedFile.close();
         }else if(type_reciv=="msg"){
+           qDebug()<<msg_string_reciv.toLatin1();
            QString  time = QDateTime::currentDateTimeUtc().toString();
 
             ui->textBrowser->append("[  partner] "+ time);
             ui->textBrowser->append(msg_string_reciv);
+        }else{
+            qDebug()<<"has no type";
         }
 
 
