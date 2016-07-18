@@ -20,7 +20,7 @@ Widget::Widget(QWidget *parent,QString name,QString usrname) :
     userName = usrname;
     name_w = name;
     ui->setupUi(this);
-    setWindowTitle(QString::fromLocal8Bit("chaoshi"));
+    setWindowTitle(QString::fromLocal8Bit("Linpop"));
 
      msgBrowser = new QTextBrowser;
      msgBrowser->setTextColor(Qt::blue);
@@ -51,12 +51,37 @@ Widget::Widget(QWidget *parent,QString name,QString usrname) :
 
      serverIP =new QHostAddress();
 
-//     connect(connectBtn,SIGNAL(clicked()),this,SLOT(slotEnter()));
-//     connect(sendBtn,SIGNAL(clicked()),this,SLOT(slotSend()));
-//     connect(oepnFileBtn,SIGNAL(clicked()),this,SLOT(slotOpen()));
-//     connect(sendFileBtn,SIGNAL(clicked()),this,SLOT(sendFile_start()));
+
 
      sendBtn->setEnabled(false);
+
+     QString ip ="115.159.83.140 ";
+     if(!serverIP->setAddress(ip))
+     {
+         QMessageBox::information(this,tr("error"),tr("server ip address error!"));
+         return;
+     }
+
+     if(userNameLineEdit->text()=="")
+     {
+         QMessageBox::information(this,tr("error"),tr("User name error!"));
+         return;
+     }
+
+
+
+     tcpSocket = new QTcpSocket(this);
+     connect(tcpSocket,SIGNAL(connected()),this,SLOT(slotConnected()));
+     connect(tcpSocket,SIGNAL(disconnected()),this,SLOT(slotDisconnected()));
+     connect(tcpSocket,SIGNAL(readyRead()),this,SLOT(dataReceived()));
+     port = 9999;
+     tcpSocket->connectToHost(*serverIP,port);
+     ui->connect->setText(tr("disconnect"));
+     status=true;
+
+
+
+
 }
 
 Widget::~Widget()
@@ -233,6 +258,7 @@ void Widget::slotOpen(){
                 "open file dialog Choose a file",
                 "/home",
                 "Images (*.*)" );
+
 }
 
 void Widget::sendFile_start(){
@@ -279,6 +305,21 @@ void Widget::on_sendBtn_2_clicked()
                 "open file dialog Choose a file",
                 "/home",
                 "Images (*.*)" );
+    QFile *sendFile = new QFile(fileName);
+    if (!sendFile->open(QFile::ReadOnly ))  //读取发送文件
+    {    return;}
+    QByteArray outBlock;
+    outBlock = sendFile->read(sendFile->size());
+
+
+    QJsonObject msg_json;
+    msg_json.insert("usrname",userName);
+    msg_json.insert("type","file");
+    msg_json.insert("content",outBlock.data());
+    QJsonDocument msg_doc(msg_json);
+    QString msg(msg_doc.toJson(QJsonDocument::Compact));
+
+    tcpSocket->write(msg.toLatin1(),msg.size());
 }
 
 void Widget::on_usrTblWidget_clicked(const QModelIndex &index)
@@ -337,6 +378,8 @@ void Widget::on_connect_clicked()
         QString msg(msg_doc.toJson(QJsonDocument::Compact));
         ui->msgTxtEdit->clear();
         QString  time = QDateTime::currentDateTimeUtc().toString();
+        ui->textBrowser->setTextColor(Qt::gray);
+         ui->textBrowser->setCurrentFont(QFont("Times New Roman",12));
          ui->textBrowser->append("["+userName+"] "+ time);
          ui->textBrowser->append(msg_json.take("content").toString());
 

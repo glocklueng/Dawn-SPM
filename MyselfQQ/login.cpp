@@ -2,6 +2,8 @@
 
 Login::Login(QWidget *parent) : QWidget(parent)
 {
+
+    setWindowTitle(QString::fromLocal8Bit("Linpop"));
     loginBtn = new QPushButton(QString::fromLocal8Bit("connect"));
     usrID = new QLineEdit();
     passwd = new QLineEdit();
@@ -25,7 +27,7 @@ Login::Login(QWidget *parent) : QWidget(parent)
 
 void Login::loginAttempt()
 {
-    client = new Drawer(usrID->text(),passwd->text(),0,0);
+    client = new Widget(0,"all",usrID->text());
     client->show();
     this->hide();
 }

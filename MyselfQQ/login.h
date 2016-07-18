@@ -1,7 +1,7 @@
 #ifndef LOGIN_H
 #define LOGIN_H
 
-#include "drawer.h"
+#include "widget.h"
 #include <QMainWindow>
 #include <QObject>
 #include <QWidget>
@@ -24,7 +24,7 @@ private:
     QLabel *usrID_Lab;
     QLabel *passwd_Lab;
     QGridLayout *mainLayout;
-    Drawer *client;
+    Widget *client;
 
 public slots:
     void loginAttempt();
