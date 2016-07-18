@@ -17,6 +17,7 @@ chatServer.on('connection', function(client) {
             broadcast(reciv_obj,client);
             console.log(reciv_obj.usrname+" says: "+reciv_obj.content);
             console.log(reciv_obj.toname)
+            console.log(reciv_obj);
         }else if(reciv_obj.type =="file"){
             broadcast(reciv_obj,client);
             console.log(reciv_obj.usrname+"send a file");
