@@ -193,7 +193,7 @@ p, li { white-space: pre-wrap; }
   <widget class="QToolButton" name="underlineBtn">
    <property name="geometry">
     <rect>
-     <x>220</x>
+     <x>230</x>
      <y>290</y>
      <width>51</width>
      <height>31</height>
@@ -219,7 +219,7 @@ p, li { white-space: pre-wrap; }
   <widget class="QToolButton" name="colorBtn">
    <property name="geometry">
     <rect>
-     <x>270</x>
+     <x>280</x>
      <y>290</y>
      <width>51</width>
      <height>31</height>
@@ -242,7 +242,7 @@ p, li { white-space: pre-wrap; }
   <widget class="QToolButton" name="sendBtn_2">
    <property name="geometry">
     <rect>
-     <x>320</x>
+     <x>330</x>
      <y>290</y>
      <width>51</width>
      <height>31</height>
@@ -291,7 +291,7 @@ p, li { white-space: pre-wrap; }
   <widget class="QToolButton" name="clearBtn">
    <property name="geometry">
     <rect>
-     <x>420</x>
+     <x>430</x>
      <y>290</y>
      <width>41</width>
      <height>31</height>
@@ -314,7 +314,7 @@ p, li { white-space: pre-wrap; }
   <widget class="QToolButton" name="saveBtn">
    <property name="geometry">
     <rect>
-     <x>370</x>
+     <x>380</x>
      <y>290</y>
      <width>51</width>
      <height>31</height>

@@ -49,13 +49,17 @@ private slots:
 
     void on_sendBtn_2_clicked();
 
-    void on_usrTblWidget_clicked(const QModelIndex &index);
 
     void on_clearBtn_clicked();
 
-    void on_usrTblWidget_doubleClicked(const QModelIndex &index);
 
     void on_connect_clicked();
+
+    void on_usrTblWidget_doubleClicked(const QModelIndex &index);
+
+    void on_exitBtn_clicked();
+
+    void on_saveBtn_clicked();
 
 private:
     QString userName;

@@ -12,6 +12,7 @@
 #include <QUrl>
 #include <QDateTime>
 #include <QDebug>
+#include <QTableWidgetItem>
 
 Widget::Widget(QWidget *parent,QString name,QString usrname) :
     QWidget(parent),
@@ -20,7 +21,13 @@ Widget::Widget(QWidget *parent,QString name,QString usrname) :
     userName = usrname;
     name_w = name;
     ui->setupUi(this);
-    setWindowTitle(QString::fromLocal8Bit("Linpop"));
+    if(name=="all")
+    {
+        setWindowTitle(QString::fromLocal8Bit("Linpop"));
+    }else
+    {
+        setWindowTitle(name);
+    }
 
      msgBrowser = new QTextBrowser;
      msgBrowser->setTextColor(Qt::blue);
@@ -32,12 +39,6 @@ Widget::Widget(QWidget *parent,QString name,QString usrname) :
 
      userNameLabel = new QLabel(tr("usrname"));
      userNameLineEdit = new QLineEdit;
-
-
-
-
-
-
      connectBtn= new QPushButton(QString::fromLocal8Bit("连接"));
      oepnFileBtn= new QPushButton(QString::fromLocal8Bit("打开文件"));
      sendFileBtn = new QPushButton(QString::fromLocal8Bit("sendfile"));
@@ -178,6 +179,7 @@ void Widget::slotDisconnected()
 
 void Widget::dataReceived()
 {
+    int count =0;
     qDebug()<<"data";
     while(tcpSocket->bytesAvailable()>0)
     {
@@ -218,7 +220,7 @@ void Widget::dataReceived()
                     {
                         QJsonValue content_value = obj.take("content");
                                                datagram_reciv = content_value.toVariant().toByteArray();
-                    }else if(type_reciv=="msg")
+                    }else if(type_reciv=="msg"||type_reciv=="refresh")
                     {   qDebug()<<"is a msg";
                         QJsonValue content_value = obj.take("content");
                         msg_string_reciv = content_value.toString();
@@ -243,11 +245,13 @@ void Widget::dataReceived()
 
             ui->textBrowser->append("["+usrname_reciv+"]"+ time);
             ui->textBrowser->append(msg_string_reciv);
+        }else if(type_reciv=="refresh"){
+            ui->usrTblWidget->insertRow(count);
+            ui->usrTblWidget->setItem(count,0,new QTableWidgetItem(msg_string_reciv));
+
         }else{
             qDebug()<<"has no type";
         }
-
-
     }
 
 }
@@ -322,10 +326,7 @@ void Widget::on_sendBtn_2_clicked()
     tcpSocket->write(msg.toLatin1(),msg.size());
 }
 
-void Widget::on_usrTblWidget_clicked(const QModelIndex &index)
-{
 
-}
 
 void Widget::on_clearBtn_clicked()
 {
@@ -333,10 +334,7 @@ void Widget::on_clearBtn_clicked()
 
 }
 
-void Widget::on_usrTblWidget_doubleClicked(const QModelIndex &index)
-{
 
-}
 
 void Widget::on_connect_clicked()
 {
@@ -389,4 +387,30 @@ void Widget::on_connect_clicked()
         tcpSocket->disconnectFromHost();
         status=false;
     }
+}
+
+
+
+void Widget::on_usrTblWidget_doubleClicked(const QModelIndex &index)
+{
+    Widget *nw = new Widget(0,ui->usrTblWidget->item(index.row(),0)->text(),userName);
+    nw->show();
+    this->hide();
+}
+
+void Widget::on_exitBtn_clicked()
+{
+    this->hide();
+}
+
+void Widget::on_saveBtn_clicked()
+{
+    QString filename_temp = QDir::currentPath()+"/"+name_w+".txt";
+    qDebug()<<filename_temp;
+    QFile savefile(filename_temp);
+    if (!savefile.open(QFile::WriteOnly ))  {    return;}
+    QTextStream stream(&savefile);
+    stream<<ui->textBrowser->toHtml();
+    stream.flush();
+    savefile.close();
 }

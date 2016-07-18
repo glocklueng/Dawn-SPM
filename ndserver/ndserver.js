@@ -21,6 +21,8 @@ chatServer.on('connection', function(client) {
             broadcast(reciv_obj,client);
             console.log(reciv_obj.usrname+"send a file");
             console.log(reciv_obj);
+        }else if(reciv_obj.type == "login"){
+            refresh(client);
         }else{
             broadcast(reciv_obj,client);
             console.log(data);
@@ -42,6 +44,17 @@ function broadcast(message, client) {
             console.log(message);
             clientList[i].write(JSON.stringify(message));
         }
+    }
+}
+function refresh(client) {
+    reciv_obj.toname ="all";
+    reciv_obj.type = "refresh";
+    for(var i=0;i<clientList.length;i+=1) {
+            reciv_obj.content =  clientList[i].name;
+            console.log(client.name);
+            console.log(message);
+            clientList[i].write(JSON.stringify(reciv_obj));
+
     }
 }
 
