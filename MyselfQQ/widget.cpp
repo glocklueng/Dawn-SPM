@@ -11,7 +11,6 @@
 #include <QtMultimedia/QMediaPlayer>
 #include <QUrl>
 #include <QDateTime>
-#include <QDebug>
 
 Widget::Widget(QWidget *parent,QString name,QString usrname) :
     QWidget(parent),
@@ -25,13 +24,18 @@ Widget::Widget(QWidget *parent,QString name,QString usrname) :
      msgBrowser = new QTextBrowser;
      msgBrowser->setTextColor(Qt::blue);
      msgBrowser->setCurrentFont(QFont("Times New Roman",12));
-
+     contentListWidget = new QListWidget;
 
 
      sendBtn = new QPushButton(QString::fromLocal8Bit("fasong"));
 
      userNameLabel = new QLabel(tr("usrname"));
      userNameLineEdit = new QLineEdit;
+
+
+
+
+
 
      connectBtn= new QPushButton(QString::fromLocal8Bit("连接"));
      oepnFileBtn= new QPushButton(QString::fromLocal8Bit("打开文件"));
@@ -45,6 +49,12 @@ Widget::Widget(QWidget *parent,QString name,QString usrname) :
      userNameLineEdit->setText("usrID");
 
      serverIP =new QHostAddress();
+
+//     connect(connectBtn,SIGNAL(clicked()),this,SLOT(slotEnter()));
+//     connect(sendBtn,SIGNAL(clicked()),this,SLOT(slotSend()));
+//     connect(oepnFileBtn,SIGNAL(clicked()),this,SLOT(slotOpen()));
+//     connect(sendFileBtn,SIGNAL(clicked()),this,SLOT(sendFile_start()));
+
      sendBtn->setEnabled(false);
 }
 
@@ -96,7 +106,9 @@ void Widget::on_colorBtn_clicked()
     }
 }
 
-
+void Widget::slotEnter()
+{
+}
 
 void Widget::slotConnected()
 {
@@ -146,7 +158,6 @@ void Widget::dataReceived()
         QString type_reciv;
         QString usrname_reciv;
         QByteArray datagram_reciv;
-        QString msg_string_reciv;
         QByteArray datagram;
         datagram.resize(tcpSocket->bytesAvailable());
 
@@ -172,20 +183,15 @@ void Widget::dataReceived()
                 }
                 if(obj.contains("content"))
                 {
-                    if(type_reciv=="file")
-                    {
-                        QJsonValue content_value = obj.take("content");
-                        datagram_reciv = content_value.toVariant().toByteArray();
-                    }else if(type_reciv=="msg")
-                    {
-                        QJsonValue content_value = obj.take("content");
-                        msg_string_reciv = content_value.toString();
-                    }
+                    QJsonValue content_value = obj.take("content");
+                    datagram_reciv = content_value.toVariant().toByteArray();
                 }
             }
         }
         if(type_reciv == "file" )
         {
+//            fileName_Lab->setText("recive");
+//            QString fileName_reciv = QFileDialog::getSaveFileName(this,tr("Save File"),QString(),tr("Files (*.txt);;C++ (*.cpp *.h)"));
             QString fileName_reciv = QFileDialog::getSaveFileName(this,tr("Save File"),QString(),tr("Files *.*"));
             QFile receivedFile(fileName_reciv);
             if (!receivedFile.open(QFile::WriteOnly ))  {    return;}
@@ -195,9 +201,13 @@ void Widget::dataReceived()
             receivedFile.close();
         }else if(type_reciv=="msg"){
            QString  time = QDateTime::currentDateTimeUtc().toString();
+
             ui->textBrowser->append("[  partner] "+ time);
-            ui->textBrowser->append(msg_string_reciv);
+            ui->textBrowser->append(obj.take("content").toString());
         }
+
+
+        datagram_reciv.resize(0);
     }
 
 }
