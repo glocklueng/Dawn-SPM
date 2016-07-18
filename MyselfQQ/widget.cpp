@@ -147,8 +147,8 @@ void Widget::slotSend()
 
 void Widget::slotDisconnected()
 {
-    sendBtn->setEnabled(false);
-    connectBtn->setText(tr("connect"));
+    ui->connect->setText(tr("connect"));
+    status = false;
 }
 
 void Widget::dataReceived()
@@ -216,7 +216,7 @@ void Widget::dataReceived()
            qDebug()<<msg_string_reciv.toLatin1();
            QString  time = QDateTime::currentDateTimeUtc().toString();
 
-            ui->textBrowser->append("[  partner] "+ time);
+            ui->textBrowser->append("["+usrname_reciv+"]"+ time);
             ui->textBrowser->append(msg_string_reciv);
         }else{
             qDebug()<<"has no type";
@@ -299,8 +299,6 @@ void Widget::on_usrTblWidget_doubleClicked(const QModelIndex &index)
 
 void Widget::on_connect_clicked()
 {
-
-
     if(!status)
     {
         QString ip ="115.159.83.140 ";
@@ -324,19 +322,26 @@ void Widget::on_connect_clicked()
         connect(tcpSocket,SIGNAL(readyRead()),this,SLOT(dataReceived()));
         port = 9999;
         tcpSocket->connectToHost(*serverIP,port);
-        contentListWidget->addItem("Connecting to");
-        contentListWidget->addItem(serverIP->toString()+":"+QString::number(port));
+        ui->connect->setText(tr("disconnect"));
         status=true;
     }
     else
     {
-        int length=0;
-        QString msg=userName+tr(":Leave Room");
 
-        if((length=tcpSocket->write(msg.toLatin1(),msg.length()))!=msg. length())
-        {
-            return;
-        }
+        QJsonObject msg_json;
+        msg_json.insert("usrname",userName);
+        msg_json.insert("type","msg");
+        msg_json.insert("toname",name_w);
+        msg_json.insert("content",userName+tr(":Leave Room"));
+        QJsonDocument msg_doc(msg_json);
+        QString msg(msg_doc.toJson(QJsonDocument::Compact));
+        ui->msgTxtEdit->clear();
+        QString  time = QDateTime::currentDateTimeUtc().toString();
+         ui->textBrowser->append("["+userName+"] "+ time);
+         ui->textBrowser->append(msg_json.take("content").toString());
+
+        tcpSocket->write(msg.toLatin1(),msg.length());
+
 
         tcpSocket->disconnectFromHost();
         status=false;

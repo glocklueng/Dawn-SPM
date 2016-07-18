@@ -17,13 +17,12 @@ chatServer.on('connection', function(client) {
             broadcast(reciv_obj,client);
             console.log(reciv_obj.usrname+" says: "+reciv_obj.content);
             console.log(reciv_obj.toname)
-            console.log(reciv_obj);
         }else if(reciv_obj.type =="file"){
             broadcast(reciv_obj,client);
             console.log(reciv_obj.usrname+"send a file");
             console.log(reciv_obj);
         }else{
-            broadcast(data,client);
+            broadcast(reciv_obj,client);
             console.log(data);
             console.log("usr: send a data"+data);
         }
@@ -40,6 +39,7 @@ function broadcast(message, client) {
     for(var i=0;i<clientList.length;i+=1) {
         if(client !== clientList[i]) {
             console.log(client.name);
+            console.log(message);
             clientList[i].write(JSON.stringify(message));
         }
     }
